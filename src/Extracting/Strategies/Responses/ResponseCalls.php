@@ -228,13 +228,13 @@ class ResponseCalls extends Strategy
     private function addHeaders(Request $request, Route $route, $headers)
     {
         // set the proper domain
-        if ($route->getDomain()) {
+        if ($route->domain()) {
             $request->headers->add([
-                'HOST' => $route->getDomain(),
+                'HOST' => $route->domain(),
             ]);
             $request->server->add([
-                'HTTP_HOST' => $route->getDomain(),
-                'SERVER_NAME' => $route->getDomain(),
+                'HTTP_HOST' => $route->domain(),
+                'SERVER_NAME' => $route->domain(),
             ]);
         }
 

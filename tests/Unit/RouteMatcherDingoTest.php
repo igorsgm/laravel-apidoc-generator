@@ -40,7 +40,7 @@ class RouteMatcherDingoTest extends TestCase
         $routes = $matcher->getRoutes($routeRules, 'dingo');
         $this->assertCount(6, $routes);
         foreach ($routes as $route) {
-            $this->assertStringContainsString('domain1', $route['route']->getDomain());
+            $this->assertStringContainsString('domain1', $route['route']->domain());
         }
 
         $routeRules[0]['match']['domains'] = ['domain2.*'];
@@ -48,7 +48,7 @@ class RouteMatcherDingoTest extends TestCase
         $routes = $matcher->getRoutes($routeRules, 'dingo');
         $this->assertCount(6, $routes);
         foreach ($routes as $route) {
-            $this->assertStringContainsString('domain2', $route['route']->getDomain());
+            $this->assertStringContainsString('domain2', $route['route']->domain());
         }
     }
 

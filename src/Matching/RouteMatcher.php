@@ -7,6 +7,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Str;
 use Mpociot\ApiDoc\Matching\RouteMatcher\Match;
+use Mpociot\ApiDoc\Tools\Utils;
 
 class RouteMatcher implements RouteMatcherInterface
 {
@@ -64,10 +65,10 @@ class RouteMatcher implements RouteMatcherInterface
             ? ! empty(array_intersect($route->versions(), $routeRule['match']['versions'] ?? []))
             : true;
 
-        return Str::is($mustIncludes, $route->getName())
-            || Str::is($mustIncludes, $route->uri())
-            || (Str::is($routeRule['match']['domains'] ?? [], $route->getDomain())
-            && Str::is($routeRule['match']['prefixes'] ?? [], $route->uri())
+        return Utils::strIs($mustIncludes, $route->getName())
+            || Utils::strIs($mustIncludes, $route->uri())
+            || (Utils::strIs($routeRule['match']['domains'] ?? [], $route->domain())
+            && Utils::strIs($routeRule['match']['prefixes'] ?? [], $route->uri())
             && $matchesVersion);
     }
 
@@ -83,7 +84,7 @@ class RouteMatcher implements RouteMatcherInterface
             $excludes[] = 'telescope/*';
         }
 
-        return Str::is($excludes, $route->getName())
-            || Str::is($excludes, $route->uri());
+        return Utils::strIs($excludes, $route->getName())
+            || Utils::strIs($excludes, $route->uri());
     }
 }

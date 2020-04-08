@@ -57,7 +57,7 @@ class GetFromBodyParamTag extends Strategy
             ->filter(function ($tag) {
                 return $tag instanceof Tag && $tag->getName() === 'bodyParam';
             })
-            ->mapWithKeys(function (Tag $tag) {
+            ->transform(function (Tag $tag) {
                 // Format:
                 // @bodyParam <name> <type> <"required" (optional)> <description>
                 // Examples:

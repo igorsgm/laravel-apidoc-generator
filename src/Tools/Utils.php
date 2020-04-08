@@ -8,6 +8,7 @@ use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\VarExporter\VarExporter;
+use Illuminate\Support\Str;
 
 class Utils
 {
@@ -170,5 +171,82 @@ class Utils
         }
 
         return $output . str_repeat(" ", $closingBraceIndentation) . "{$braces[1]}";
+    }
+
+    /**
+     * Determine if a given string matches a given pattern.
+     *
+     * @param  string|array  $pattern
+     * @param  string  $value
+     * @return bool
+     */
+    public static function strIs($pattern, $value)
+    {
+        if (is_null($pattern)) {
+            $patterns = [];
+        } else {
+            $patterns = is_array($pattern) ? $pattern : [$pattern];
+        }
+
+        if (empty($patterns)) {
+            return false;
+        }
+
+        foreach ($patterns as $pattern) {
+            // If the given value is an exact match we can of course return true right
+            // from the beginning. Otherwise, we will translate asterisks and do an
+            // actual pattern match against the two strings to see if they match.
+            if ($pattern == $value) {
+                return true;
+            }
+
+            $pattern = preg_quote($pattern, '#');
+
+            // Asterisks are translated into zero-or-more regular expression wildcards
+            // to make it convenient to check if the strings starts with the given
+            // pattern such as "library/*", making any string check convenient.
+            $pattern = str_replace('\*', '.*', $pattern);
+
+            if (preg_match('#^'.$pattern.'\z#u', $value) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the base URL for the request.
+     *
+     * @param  string  $scheme
+     * @param  string|null  $root
+     * @return string
+     */
+    public static function urlFormatRoot($scheme, $root = null)
+    {
+        $start = Str::startsWith($root, 'http://') ? 'http://' : 'https://';
+
+        return preg_replace('~'.$start.'~', $scheme, $root, 1);
+    }
+
+    /**
+     * Create a file checking if the folders in the path already exists, otherwise it will create the folders as well
+     *
+     * @param string $path
+     * @param string $fileName
+     * @param string $contents
+     * @return bool
+     */
+    public static function createFile($path, $fileName, $contents)
+    {
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+
+        $path = $path . $fileName;
+
+        $bytes = file_put_contents($path, $contents);
+
+        return $bytes > 0;
     }
 }

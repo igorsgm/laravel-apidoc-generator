@@ -139,6 +139,7 @@ class GenerateDocumentation extends Command
      */
     private function isValidRoute(array $routeControllerAndMethod = null)
     {
+        return true;
         if (is_array($routeControllerAndMethod)) {
             $routeControllerAndMethod = implode('@', $routeControllerAndMethod);
         }
@@ -165,7 +166,7 @@ class GenerateDocumentation extends Command
      */
     private function doesControllerMethodExist(array $routeControllerAndMethod)
     {
-        [$class, $method] = $routeControllerAndMethod;
+        list($class, $method) = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
 
         if (! $reflection->hasMethod($method)) {
@@ -184,7 +185,7 @@ class GenerateDocumentation extends Command
      */
     private function isRouteVisibleForDocumentation(array $routeControllerAndMethod)
     {
-        [$class, $method] = $routeControllerAndMethod;
+        list($class, $method) = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
 
         $comment = $reflection->getMethod($method)->getDocComment();

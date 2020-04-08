@@ -29,7 +29,7 @@ class RouteMatcherTest extends TestCase
         $routes = $matcher->getRoutes($routeRules);
         $this->assertCount(6, $routes);
         foreach ($routes as $route) {
-            $this->assertStringContainsString('domain1', $route['route']->getDomain());
+            $this->assertStringContainsString('domain1', $route['route']->domain());
         }
 
         $routeRules[0]['match']['domains'] = ['domain2.*'];
@@ -37,7 +37,7 @@ class RouteMatcherTest extends TestCase
         $routes = $matcher->getRoutes($routeRules);
         $this->assertCount(6, $routes);
         foreach ($routes as $route) {
-            $this->assertStringContainsString('domain2', $route['route']->getDomain());
+            $this->assertStringContainsString('domain2', $route['route']->domain());
         }
     }
 
@@ -165,13 +165,13 @@ class RouteMatcherTest extends TestCase
         $routes = collect($routes);
         $firstRuleGroup = $routes->filter(function ($route) {
             return Str::is('prefix1/*', $route['route']->uri())
-                && Str::is('domain1.*', $route['route']->getDomain());
+                && Str::is('domain1.*', $route['route']->domain());
         });
         $this->assertCount(2, $firstRuleGroup);
 
         $secondRuleGroup = $routes->filter(function ($route) {
             return Str::is('prefix2/*', $route['route']->uri())
-                && Str::is('domain2.*', $route['route']->getDomain());
+                && Str::is('domain2.*', $route['route']->domain());
         });
         $this->assertCount(2, $secondRuleGroup);
     }

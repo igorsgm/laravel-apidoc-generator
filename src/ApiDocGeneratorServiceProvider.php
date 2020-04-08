@@ -24,7 +24,7 @@ class ApiDocGeneratorServiceProvider extends ServiceProvider
         ], 'apidoc-views');
 
         $this->publishes([
-            __DIR__ . '/../config/apidoc.php' => $this->app->configPath('apidoc.php'),
+            __DIR__ . '/../config/apidoc.php' => $this->app->configPath() . '/apidoc.php',
         ], 'apidoc-config');
 
         $this->mergeConfigFrom(__DIR__ . '/../config/apidoc.php', 'apidoc');
@@ -40,6 +40,27 @@ class ApiDocGeneratorServiceProvider extends ServiceProvider
 
         // Bind the route matcher implementation
         $this->app->bind(RouteMatcherInterface::class, config('apidoc.routeMatcher', RouteMatcher::class));
+    }
+
+    /**
+     * Register the API doc commands.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->singleton('apidoc.generate', function () {
+            return new GenerateDocumentation();
+        });
+
+        $this->app->singleton('apidoc.rebuild', function () {
+            return new RebuildDocumentation();
+        });
+
+        $this->commands([
+            'apidoc.generate',
+            'apidoc.rebuild',
+        ]);
     }
 
     /**

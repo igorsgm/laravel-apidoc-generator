@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Mpociot\ApiDoc\Tools\DocumentationConfig;
+use Mpociot\ApiDoc\Tools\Utils;
 use Mpociot\Documentarian\Documentarian;
 
 class Writer
@@ -204,7 +205,8 @@ class Writer
             $collection = $this->generatePostmanCollection($parsedRoutes);
             if ($this->isStatic) {
                 $collectionPath = "{$this->outputPath}/collection.json";
-                file_put_contents($collectionPath, $collection);
+                Utils::createFile($this->outputPath . '/', 'collection.json', $collection);
+                // file_put_contents($collectionPath, $collection);
             } else {
                 Storage::disk('local')->put('apidoc/collection.json', $collection);
                 $collectionPath = 'storage/app/apidoc/collection.json';
@@ -224,7 +226,7 @@ class Writer
     public function generatePostmanCollection(Collection $routes)
     {
         /** @var PostmanCollectionWriter $writer */
-        $writer = app()->makeWith(
+        $writer = app()->make(
             PostmanCollectionWriter::class,
             ['routeGroups' => $routes, 'baseUrl' => $this->baseUrl]
         );

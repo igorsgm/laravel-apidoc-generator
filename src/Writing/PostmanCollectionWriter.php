@@ -5,6 +5,7 @@ namespace Mpociot\ApiDoc\Writing;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Mpociot\ApiDoc\Tools\Utils;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
 
@@ -193,6 +194,6 @@ class PostmanCollectionWriter
             return $reflectionMethod->invokeArgs($url, ['', $baseUrl]);
         }
 
-        return URL::formatRoot('', $baseUrl);
+        return Utils::urlFormatRoot('', $baseUrl);
     }
 }

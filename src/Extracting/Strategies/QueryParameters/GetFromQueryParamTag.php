@@ -58,7 +58,7 @@ class GetFromQueryParamTag extends Strategy
             ->filter(function ($tag) {
                 return $tag instanceof Tag && $tag->getName() === 'queryParam';
             })
-            ->mapWithKeys(function (Tag $tag) {
+            ->transform(function (Tag $tag) {
                 // Format:
                 // @queryParam <name> <"required" (optional)> <description>
                 // Examples:

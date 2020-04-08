@@ -58,7 +58,7 @@ class GetFromUrlParamTag extends Strategy
             ->filter(function ($tag) {
                 return $tag instanceof Tag && $tag->getName() === 'urlParam';
             })
-            ->mapWithKeys(function (Tag $tag) {
+            ->transform(function (Tag $tag) {
                 // Format:
                 // @urlParam <name> <"required" (optional)> <description>
                 // Examples:
