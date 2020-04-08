@@ -21,7 +21,8 @@ class RouteMatcher implements RouteMatcherInterface
     private function getRoutesToBeDocumented(array $routeRules, bool $usingDingoRouter = false)
     {
         $allRoutes = $this->getAllRoutes($usingDingoRouter);
-
+        // Limit routes for test purposes
+        //$allRoutes = collect($allRoutes->getRoutes())->take(10);
         $matchedRoutes = [];
 
         foreach ($routeRules as $routeRule) {
