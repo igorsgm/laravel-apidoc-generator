@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Mpociot\ApiDoc\Extracting\Generator;
 use Mpociot\ApiDoc\Matching\RouteMatcher\Match;
 use Mpociot\ApiDoc\Matching\RouteMatcherInterface;
@@ -83,6 +84,19 @@ class GenerateDocumentation extends Command
     }
 
     /**
+     * Retrieve the routes group name, based on Controller name.
+     *
+     * @param Route $route
+     * @return string
+     */
+    private function getRoutesGroupName(Route $route)
+    {
+        $controllerName = Str::parseCallback($route->getAction()['uses'], null)[0];
+        $controllerName = class_basename($controllerName);
+        return str_replace('Controller', '', $controllerName);
+    }
+
+    /**
      * @param \Mpociot\ApiDoc\Extracting\Generator $generator
      * @param Match[] $routes
      *
@@ -93,53 +107,99 @@ class GenerateDocumentation extends Command
     private function processRoutes(Generator $generator, array $routes)
     {
         $parsedRoutes = [];
+        $processedRoutesCount = 0;
+        $skipTemplate = [
+            'count' => 0,
+            'list' => []
+        ];
+
+        $skippedRoutes = [
+            'closure' => array_merge($skipTemplate, ['message' => 'Closure routes']),
+            'invalid' => array_merge($skipTemplate, ['message' => 'Invalid routes']),
+            'controller_method' => array_merge($skipTemplate, ['message' => 'Controller methods don\'t exist']),
+            'hide' => array_merge($skipTemplate, ['message' => '@hideFromAPIDocumentation specified']),
+            'exception' => array_merge($skipTemplate, ['message' => 'Exceptions.']),
+        ];
+
         foreach ($routes as $routeItem) {
-            $route = $routeItem->getRoute();
             /** @var Route $route */
-            $messageFormat = '%s route: [%s] %s';
-            $routeMethods = implode(',', $generator->getMethods($route));
-            $routePath = $generator->getUri($route);
-
-            if ($this->isClosureRoute($route->getAction())) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': Closure routes are not supported.');
-                continue;
-            }
-
+            $route = $routeItem->getRoute();
             $routeControllerAndMethod = Utils::getRouteClassAndMethodNames($route->getAction());
-            if (! $this->isValidRoute($routeControllerAndMethod)) {
-                $this->warn(sprintf($messageFormat, 'Skipping invalid', $routeMethods, $routePath));
-                continue;
-            }
-
-            if (! $this->doesControllerMethodExist($routeControllerAndMethod)) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': Controller method does not exist.');
-                continue;
-            }
-
-            if (! $this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': @hideFromAPIDocumentation was specified.');
-                continue;
-            }
 
             try {
-                $parsedRoutes[] = $generator->processRoute($route, $routeItem->getRules());
-                $this->info(sprintf($messageFormat, 'Processed', $routeMethods, $routePath));
-            } catch (\Exception $exception) {
-                $this->warn(sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . '- Exception ' . get_class($exception) . ' encountered : ' . $exception->getMessage());
+                if ($this->isValidRoute($route, $routeControllerAndMethod) && $this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
+                    $parsedRoute = $generator->processRoute($route, $routeItem['apply'] ?? []);
+                    $parsedRoute['metadata']['groupName'] = $this->getRoutesGroupName($route);
+
+                    $parsedRoutes[] = $parsedRoute;
+                    $processedRoutesCount++;
+                }
+            } catch (\Exception $e) {
+
+                $messageFormat = '%s route: [%s] %s';
+                $routeMethods = implode(',', $generator->getMethods($route));
+                $routePath = $generator->getUri($route);
+
+                if ($this->isClosureRoute($route->getAction())) {
+                    $message = sprintf($messageFormat, 'Skipping', $routeMethods, $routePath);
+                    $this->warn($message . ': Closure routes are not supported.');
+                    $skippedRoutes['closure']['count']++;
+                    $skippedRoutes['closure']['list'][] = $message;
+                    continue;
+                }
+
+                if (!$this->isValidRoute($route, $routeControllerAndMethod)) {
+                    $message = sprintf($messageFormat, 'Skipping invalid', $routeMethods, $routePath);
+                    $this->warn($message);
+                    $skippedRoutes['invalid']['count']++;
+                    $skippedRoutes['invalid']['list'][] = $message;
+                    continue;
+                }
+
+                if (!$this->doesControllerMethodExist($routeControllerAndMethod)) {
+                    $message = sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ': ' . $route->getAction()['uses'];
+                    $this->warn($message . ' - Controller method does not exist.');
+                    $skippedRoutes['controller_method']['count']++;
+                    $skippedRoutes['controller_method']['list'][] = $message;
+                    continue;
+                }
+
+                if (!$this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
+                    $message = sprintf($messageFormat, 'Skipping', $routeMethods, $routePath);
+                    $this->warn($message . ': @hideFromAPIDocumentation was specified.');
+                    $skippedRoutes['hide']['count']++;
+                    $skippedRoutes['hide']['list'][] = $message;
+                    continue;
+                }
+
+                $message = sprintf($messageFormat, 'Skipping', $routeMethods, $routePath) . ' - Exception ' . get_class($e) . ' encountered : ' . $e->getMessage();
+                $this->warn($message);
+                $skippedRoutes['exception']['count']++;
+                $skippedRoutes['exception']['list'][] = $message;
             }
         }
+
+        $this->displayRoutesReport($processedRoutesCount, $skippedRoutes);
 
         return $parsedRoutes;
     }
 
     /**
-     * @param array $routeControllerAndMethod
+     * Validate the route. It will just consider the routes with the api middleware
+     *
+     * @param Route $route
+     * @param array|null $routeControllerAndMethod
      *
      * @return bool
      */
-    private function isValidRoute(array $routeControllerAndMethod = null)
+    private function isValidRoute(Route $route, array $routeControllerAndMethod = null)
     {
         return true;
+        $middleware = $route->middleware();
+        if (empty($middleware) || $middleware[0] !== 'api') {
+            return false;
+        }
+
         if (is_array($routeControllerAndMethod)) {
             $routeControllerAndMethod = implode('@', $routeControllerAndMethod);
         }
@@ -177,13 +237,13 @@ class GenerateDocumentation extends Command
     }
 
     /**
-     * @param array $routeControllerAndMethod
+     * @param null|array $routeControllerAndMethod
      *
      * @throws ReflectionException
      *
      * @return bool
      */
-    private function isRouteVisibleForDocumentation(array $routeControllerAndMethod)
+    private function isRouteVisibleForDocumentation($routeControllerAndMethod)
     {
         list($class, $method) = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
@@ -201,5 +261,35 @@ class GenerateDocumentation extends Command
         }
 
         return true;
+    }
+
+    /**
+     * Display the route's report with the count of processed and skipped routes
+     *
+     * @param integer $processedRoutesCount
+     * @param array $skippedRoutes
+     */
+    private function displayRoutesReport($processedRoutesCount, $skippedRoutes)
+    {
+        $skippedRoutes = collect($skippedRoutes);
+        $totalNonProcessed = $skippedRoutes->sum('count');
+        $this->line("-----------------------------------------------------------------");
+
+        if (!empty($totalNonProcessed)) {
+
+            $skippedRoutes = $skippedRoutes->sortByDesc(function ($item, $type) {
+                return $item['count'];
+            })->reject(function ($item) {
+                return empty($item['count']);
+            })->transform(function ($item) {
+                return $item['count'] . ' ' . $item['message'];
+            });
+
+            $this->warn("(" . $skippedRoutes->implode(' | ') . ")");
+            $this->warn("Total = " . $totalNonProcessed . " routes skipped or failed to process.");
+        }
+
+        $this->info("Total = " . $processedRoutesCount . " routes processed.");
+        $this->line("-----------------------------------------------------------------");
     }
 }
