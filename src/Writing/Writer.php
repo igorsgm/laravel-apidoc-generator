@@ -78,9 +78,9 @@ class Writer
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
         // go in resources/views/apidoc/ and storage/app/apidoc/ respectively.
 
-        $this->writeMarkdownAndSourceFiles($routes);
+//        $this->writeMarkdownAndSourceFiles($routes);
 
-        $this->writeHtmlDocs();
+//        $this->writeHtmlDocs();
 
         $this->writePostmanCollection($routes);
     }

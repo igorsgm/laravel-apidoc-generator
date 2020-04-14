@@ -3,7 +3,6 @@
 namespace Mpociot\ApiDoc\Writing;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Mpociot\ApiDoc\Tools\Utils;
 use Ramsey\Uuid\Uuid;
@@ -55,29 +54,48 @@ class PostmanCollectionWriter
                 'schema' => 'https://schema.getpostman.com/json/collection/v2.0.0/collection.json',
             ],
             'item' => $this->routeGroups->map(function (Collection $routes, $groupName) {
-                return [
-                    'name' => $groupName,
-                    'description' => $routes->first()['metadata']['groupDescription'],
-                    'item' => $routes->map(\Closure::fromCallable([$this, 'generateEndpointItem']))->toArray(),
-                ];
+                return $this->makeRouteGroup($routes, $groupName);
             })->values()->toArray(),
         ];
 
-        if (! empty($this->auth)) {
+        if (!empty($this->auth)) {
             $collection['auth'] = $this->auth;
         }
 
         return json_encode($collection, JSON_PRETTY_PRINT);
     }
 
-    protected function generateEndpointItem($route)
+    /**
+     * @param Collection $routes
+     * @param $groupName
+     * @return array
+     */
+    public function makeRouteGroup(Collection $routes, $groupName)
     {
+        $firstRoute = $routes->first();
+        return [
+            'name' => $groupName,
+            'description' => is_array($firstRoute) ? $firstRoute['metadata']['groupDescription'] : $routes->keys()->first(),
+            'item' => $routes->map(function ($route) use ($groupName) {
+                $groupName = is_array($route) ? $groupName : $route->first()['metadata']['groupName'];
+                return $this->generateEndpointItem($route, $groupName);
+            })->values()->toArray(),
+        ];
+    }
+
+    protected function generateEndpointItem($route, $groupName = null)
+    {
+        // Recursive function
+        if (!is_array($route)) {
+            return $this->makeRouteGroup($route, $groupName);
+        }
+
         $mode = 'raw';
 
         $method = $route['methods'][0];
 
         return [
-            'name' => $route['metadata']['title'] != '' ? $route['metadata']['title'] : $route['uri'],
+            'name' => $this->getRequestName($route),
             'request' => [
                 'url' => $this->makeUrlData($route),
                 'method' => $method,
@@ -90,6 +108,24 @@ class PostmanCollectionWriter
                 'response' => [],
             ],
         ];
+    }
+
+    /**
+     * Retrieves the name of the request.
+     *
+     * @param array $route
+     * @return string
+     */
+    protected function getRequestName($route)
+    {
+        // return $route['metadata']['title'] != '' ? $route['metadata']['title'] : $route['uri'];
+        $name = $route['uri'];
+
+        if ($titleDesc = $route['metadata']['title']) {
+            $name .= ' (' . $titleDesc . ')';
+        }
+
+        return $name;
     }
 
     protected function resolveHeadersForRoute($route)

@@ -4,6 +4,7 @@ namespace Mpociot\ApiDoc\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -47,6 +48,11 @@ class GenerateDocumentation extends Command
     private $baseUrl;
 
     /**
+     * @var string
+     */
+    protected $permissionMiddlewareName = 'shared-permission';
+
+    /**
      * Execute the console command.
      *
      * @param RouteMatcherInterface $routeMatcher
@@ -70,11 +76,14 @@ class GenerateDocumentation extends Command
         $parsedRoutes = $this->processRoutes($generator, $routes);
 
         $groupedRoutes = collect($parsedRoutes)
-            ->groupBy('metadata.groupName')
-            ->sortBy(static function ($group) {
-                /* @var $group Collection */
-                return $group->first()['metadata']['groupName'];
-            }, SORT_NATURAL);
+            ->groupBy('metadata.permissionGroupName')
+            ->transform(function ($item) {
+                return $item->groupBy('metadata.groupName')->sortBy(static function ($group, $key) {
+                    /* @var $group Collection */
+                    return $group->first()['metadata']['groupName'];
+                }, SORT_NATURAL);
+            });
+
         $writer = new Writer(
             $this,
             $this->docConfig,
@@ -89,11 +98,32 @@ class GenerateDocumentation extends Command
      * @param Route $route
      * @return string
      */
-    private function getRoutesGroupName(Route $route)
+    private function getRoutesControllerGroupName(Route $route)
     {
         $controllerName = Str::parseCallback($route->getAction()['uses'], null)[0];
         $controllerName = class_basename($controllerName);
         return str_replace('Controller', '', $controllerName);
+    }
+
+    /**
+     * Retrieve the routes group names, based on permission middleware names.
+     *
+     * @param Route $route
+     * @return array
+     */
+    private function getRoutesPermissionGroupNames(Route $route)
+    {
+        $middlewares = $route->middleware();
+        $permissions = ['All'];
+
+        foreach ($middlewares as $middleware) {
+            if (str_contains($middleware, $this->permissionMiddlewareName)) {
+                $permissions = substr($middleware, strpos($middleware, ":") + 1);
+                $permissions = explode(',', $permissions);
+            }
+        }
+
+        return $permissions;
     }
 
     /**
@@ -129,7 +159,8 @@ class GenerateDocumentation extends Command
             try {
                 if ($this->isValidRoute($route, $routeControllerAndMethod) && $this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
                     $parsedRoute = $generator->processRoute($route, $routeItem['apply'] ?? []);
-                    $parsedRoute['metadata']['groupName'] = $this->getRoutesGroupName($route);
+                    $parsedRoute['metadata']['groupName'] = $this->getRoutesControllerGroupName($route);
+                    $parsedRoute['metadata']['permissionGroupName'] = $this->getRoutesPermissionGroupNames($route);
 
                     $parsedRoutes[] = $parsedRoute;
                     $processedRoutesCount++;
