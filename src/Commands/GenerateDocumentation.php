@@ -104,8 +104,14 @@ class GenerateDocumentation extends Command
             return $groupedRoutes->sortBy($sortByFunc, SORT_NATURAL);
         }
 
-        return $groupedRoutes->transform(function ($item) use ($sortByFunc) {
+        $permissionsMapKeys = array_keys($this->routesGroup['permissions_map']);
+
+        return $groupedRoutes->transform(function ($item, $key) use ($sortByFunc) {
             return $item->groupBy('metadata.groupName')->sortBy($sortByFunc, SORT_NATURAL);
+        })->sortBy(function ($item, $key) {
+            return $key;
+        })->keyBy(function ($item, $key) use ($permissionsMapKeys) {
+            return in_array($key, $permissionsMapKeys) ? $this->routesGroup['permissions_map'][$key] : $key;
         });
     }
 

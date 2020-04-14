@@ -104,6 +104,22 @@ return [
                  * This one will just be considered if you set 'permission' in the field 'type' right above.
                  */
                 'permission_middleware' => 'shared-permission',
+
+                'permissions_map' => [
+                    "analytics" => "[Role] Analytics",
+                    "any" => "Any",
+                    "charity" => "[Role] Charity",
+                    "cloudbot" => "[Role] Cloudbot",
+                    "donation_history" => "[Role] Donation History",
+                    "grow" => "[Role] Grow",
+                    "media_share" => "[Role] Media Share",
+                    "merch_store" => "[Role] Merch Store",
+                    "prime" => "[Role] Prime",
+                    "recent_events" => "[Role] Recent Events",
+                    "settings" => "[Role] Settings",
+                    "subscriber_history" => "[Role] Subscriber History",
+                    "widgets" => "[Role] Widgets",
+                ]
             ],
             /*
              * Specify conditions to determine what routes will be parsed in this group.
