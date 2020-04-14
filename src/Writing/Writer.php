@@ -37,6 +37,16 @@ class Writer
     private $shouldGeneratePostmanCollection = true;
 
     /**
+     * @var bool
+     */
+    private $shouldGenerateMarkdownAndSourceFiles = false;
+
+    /**
+     * @var bool
+     */
+    private $shouldGenerateHtmlDocs = false;
+
+    /**
      * @var Documentarian
      */
     private $documentarian;
@@ -64,6 +74,8 @@ class Writer
         $this->forceIt = $forceIt;
         $this->output = $output;
         $this->shouldGeneratePostmanCollection = $this->config->get('postman.enabled', false);
+        $this->shouldGenerateMarkdownAndSourceFiles = $this->config->get('docs.writeMarkdownAndSourceFiles.enabled', false);
+        $this->shouldGenerateHtmlDocs = $this->config->get('docs.writeHtmlDocs.enabled', false);
         $this->documentarian = new Documentarian();
         $this->isStatic = $this->config->get('type') === 'static';
         $this->sourceOutputPath = 'resources/docs';
@@ -78,9 +90,13 @@ class Writer
         // For 'laravel' docs, the output files (index.blade.php, collection.json)
         // go in resources/views/apidoc/ and storage/app/apidoc/ respectively.
 
-//        $this->writeMarkdownAndSourceFiles($routes);
+        if ($this->shouldGenerateMarkdownAndSourceFiles) {
+            $this->writeMarkdownAndSourceFiles($routes);
+        }
 
-//        $this->writeHtmlDocs();
+        if ($this->shouldGenerateHtmlDocs) {
+            $this->writeHtmlDocs();
+        }
 
         $this->writePostmanCollection($routes);
     }

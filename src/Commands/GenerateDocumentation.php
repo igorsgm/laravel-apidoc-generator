@@ -4,7 +4,6 @@ namespace Mpociot\ApiDoc\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -48,9 +47,9 @@ class GenerateDocumentation extends Command
     private $baseUrl;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $permissionMiddlewareName = 'shared-permission';
+    protected $routesGroup = [];
 
     /**
      * Execute the console command.
@@ -67,6 +66,7 @@ class GenerateDocumentation extends Command
 
         $this->docConfig = new DocumentationConfig(config('apidoc'));
         $this->baseUrl = $this->docConfig->get('base_url') ?? config('app.url');
+        $this->routesGroup = $this->docConfig->get('routes.0.group');
 
         URL::forceRootUrl($this->baseUrl);
 
@@ -74,15 +74,7 @@ class GenerateDocumentation extends Command
 
         $generator = new Generator($this->docConfig);
         $parsedRoutes = $this->processRoutes($generator, $routes);
-
-        $groupedRoutes = collect($parsedRoutes)
-            ->groupBy('metadata.permissionGroupName')
-            ->transform(function ($item) {
-                return $item->groupBy('metadata.groupName')->sortBy(static function ($group, $key) {
-                    /* @var $group Collection */
-                    return $group->first()['metadata']['groupName'];
-                }, SORT_NATURAL);
-            });
+        $groupedRoutes = $this->groupRoutes($parsedRoutes);
 
         $writer = new Writer(
             $this,
@@ -90,6 +82,31 @@ class GenerateDocumentation extends Command
             $this->option('force')
         );
         $writer->writeDocs($groupedRoutes);
+    }
+
+    /**
+     * @param array $parsedRoutes
+     */
+    public function groupRoutes($parsedRoutes)
+    {
+        $parsedRoutes = collect($parsedRoutes);
+
+        $sortByFunc = static function ($group) {
+            /* @var $group Collection */
+            return $group->first()['metadata']['groupName'];
+        };
+
+        $groupBy = 'metadata.' . ($this->routesGroup['type'] == 'permission' ? 'permissionGroupName' : 'groupName');
+        $groupedRoutes = $parsedRoutes->groupBy($groupBy);
+
+        // Controller grouping
+        if ($this->routesGroup['type'] !== 'permission') {
+            return $groupedRoutes->sortBy($sortByFunc, SORT_NATURAL);
+        }
+
+        return $groupedRoutes->transform(function ($item) use ($sortByFunc) {
+            return $item->groupBy('metadata.groupName')->sortBy($sortByFunc, SORT_NATURAL);
+        });
     }
 
     /**
@@ -113,11 +130,15 @@ class GenerateDocumentation extends Command
      */
     private function getRoutesPermissionGroupNames(Route $route)
     {
+        if ($this->routesGroup['type'] !== 'permission') {
+            return null;
+        }
+
         $middlewares = $route->middleware();
         $permissions = ['All'];
 
         foreach ($middlewares as $middleware) {
-            if (str_contains($middleware, $this->permissionMiddlewareName)) {
+            if (str_contains($middleware, $this->routesGroup['permission_middleware'])) {
                 $permissions = substr($middleware, strpos($middleware, ":") + 1);
                 $permissions = explode(',', $permissions);
             }

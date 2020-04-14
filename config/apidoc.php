@@ -43,6 +43,13 @@ return [
      */
     'base_url' => null,
 
+
+
+    'docs' => [
+        'writeMarkdownAndSourceFiles' => false,
+        'writeHtmlDocs' => false,
+    ],
+
     /*
      * Generate a Postman collection in addition to HTML docs.
      * For 'static' docs, the collection will be generated to public/docs/collection.json.
@@ -79,6 +86,25 @@ return [
      */
     'routes' => [
         [
+            /*
+             * 'group' is a list of custom fields added by @igorsgm
+             */
+            'group' => [
+
+                /*
+                 * The type of grouping for the routes for Postman
+                 * - "controller" will generate the documentation grouped in folders by Controller Names,
+                 * - "permission" will generate the documentation grouped in folders by Permission Middleware and Controller Names
+                 * (if you set 'permission', you must set the 'permission_middleware' property bellow.
+                 */
+                'type' => 'permission',
+
+                /*
+                 * The name of the permission middleware that should be used to group the routes.
+                 * This one will just be considered if you set 'permission' in the field 'type' right above.
+                 */
+                'permission_middleware' => 'shared-permission',
+            ],
             /*
              * Specify conditions to determine what routes will be parsed in this group.
              * A route must fulfill ALL conditions to pass.
@@ -242,9 +268,9 @@ return [
      *
      */
     'example_languages' => [
-        'bash',
         'php',
         'javascript',
+        'bash',
     ],
 
     /*
