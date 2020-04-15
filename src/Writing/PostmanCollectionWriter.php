@@ -38,7 +38,7 @@ class PostmanCollectionWriter
     public function __construct(Collection $routeGroups, $baseUrl)
     {
         $this->routeGroups = $routeGroups;
-        $this->protocol = Str::startsWith($baseUrl, 'https') ? 'https' : 'http';
+        $this->protocol = $this->getProtocol($baseUrl);
         $this->baseUrl = $this->getBaseUrl($baseUrl);
         $this->auth = config('apidoc.postman.auth');
     }
@@ -231,5 +231,14 @@ class PostmanCollectionWriter
         }
 
         return Utils::urlFormatRoot('', $baseUrl);
+    }
+
+    protected function getProtocol($baseUrl)
+    {
+        if (Str::startsWith($baseUrl, '{{')) {
+            return '';
+        }
+
+        Str::startsWith($baseUrl, 'https') ? 'https' : 'http';
     }
 }
