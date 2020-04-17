@@ -41,6 +41,7 @@ class PostmanCollectionWriter
         $this->protocol = $this->getProtocol($baseUrl);
         $this->baseUrl = $this->getBaseUrl($baseUrl);
         $this->auth = config('apidoc.postman.auth');
+        $this->apply = config('apidoc.postman.apply');
     }
 
     public function getCollection()
@@ -138,6 +139,10 @@ class PostmanCollectionWriter
             $headers = $headers->except($authHeader);
         }
 
+        if (!empty($this->apply['headers'])) {
+            $headers = $headers->union($this->apply['headers']);
+        }
+
         return $headers
             ->union([
                 'Accept' => 'application/json',
@@ -160,6 +165,12 @@ class PostmanCollectionWriter
             return Str::contains($route['uri'], '{' . $key . '}');
         });
 
+        $route['queryParameters'] = collect($route['queryParameters']);
+
+        if (!empty($this->apply['queryParams'])) {
+            $route['queryParameters'] = $route['queryParameters']->union($this->apply['queryParams']);
+        }
+
         /** @var Collection $queryParams */
         $base = [
             'protocol' => $this->protocol,
@@ -168,14 +179,19 @@ class PostmanCollectionWriter
             'path' => preg_replace_callback('/\/{(\w+)\??}(?=\/|$)/', function ($matches) {
                 return '/:' . $matches[1];
             }, $route['uri']),
-            'query' => collect($route['queryParameters'])->map(function ($parameter, $key) {
-                return [
+            'query' => $route['queryParameters']->map(function ($parameter, $key) {
+                $param = [
                     'key' => $key,
-                    'value' => urlencode($parameter['value']),
-                    'description' => $parameter['description'],
+                    'value' => Str::startsWith($parameter['value'], '{{') ? $parameter['value'] : urlencode($parameter['value']),
                     // Default query params to disabled if they aren't required and have empty values
-                    'disabled' => ! $parameter['required'] && empty($parameter['value']),
+                    'disabled' => $parameter['disabled'] || (!$parameter['required'] && empty($parameter['value'])),
                 ];
+
+                if (!empty($parameter['description'])) {
+                    $param['description'] = $parameter['description'];
+                }
+
+                return $param;
             })->values()->toArray(),
         ];
 

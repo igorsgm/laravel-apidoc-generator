@@ -41,9 +41,7 @@ return [
      * The base URL to be used in examples and the Postman collection.
      * By default, this will be the value of config('app.url').
      */
-    'base_url' => null,
-
-
+    'base_url' => '{{STREAMLABS_URL}}',
 
     'docs' => [
         'writeMarkdownAndSourceFiles' => false,
@@ -77,6 +75,32 @@ return [
          * https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html
          */
         'auth' => null,
+
+        /*
+         * Specify rules to be applied to all the postman routes in this group when generating documentation
+         */
+        'apply' => [
+            /*
+             * Specify headers to be added to the postman requests
+             */
+            'headers' => [
+                'Accept' => 'application/json',
+                'Referer' => '{{STREAMLABS_URL}}/dashboard',
+                'Cookie' => '{{STREAMLABS_COOKIE}}',
+                // 'Authorization' => 'Bearer {token}',
+                // 'Api-Version' => 'v2',
+            ],
+
+            /*
+             * Query parameters which should be sent with the API call.
+             */
+            'queryParams' => [
+                'XDEBUG_SESSION_START' => [
+                    'value' => '{{XDEBUG_SESSION_START}}',
+                    'disabled' => true,
+                ]
+            ],
+        ],
     ],
 
     /*

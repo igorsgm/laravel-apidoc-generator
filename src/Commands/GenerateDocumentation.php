@@ -141,7 +141,7 @@ class GenerateDocumentation extends Command
         }
 
         $middlewares = $route->middleware();
-        $permissions = ['All'];
+        $permissions = ['Everyone'];
 
         foreach ($middlewares as $middleware) {
             if (str_contains($middleware, $this->routesGroup['permission_middleware'])) {
