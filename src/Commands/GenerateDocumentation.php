@@ -141,7 +141,7 @@ class GenerateDocumentation extends Command
         }
 
         $middlewares = $route->middleware();
-        $permissions = ['Everyone'];
+        $permissions = [];
 
         foreach ($middlewares as $middleware) {
             if (str_contains($middleware, $this->routesGroup['permission_middleware'])) {
@@ -150,7 +150,16 @@ class GenerateDocumentation extends Command
             }
         }
 
-        return $permissions;
+        // Ignoring 'any' middleware, to be considered as "Everyone"
+        $permissions = collect($permissions)->reject(function ($permission) {
+            return $permission == 'any';
+        });
+
+        if ($permissions->isEmpty()) {
+            $permissions->push('Everyone');
+        }
+
+        return $permissions->toArray();
     }
 
     /**
