@@ -13,6 +13,14 @@ class GetFromUrlString extends Strategy
 {
     use ParamHelpers;
 
+    /**
+     * @param Route $route
+     * @param ReflectionClass $controller
+     * @param ReflectionMethod $method
+     * @param array $routeRules
+     * @param array $context
+     * @return array
+     */
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
     {
         preg_match_all('/\{(.*?)\}/', $route->uri(), $routeParams);
@@ -29,10 +37,12 @@ class GetFromUrlString extends Strategy
                 return $urlParamsMap->has($item);
             })
                 ->transform(function ($item) use ($urlParamsMap) {
-                    $item = str_replace('?', '', $item);
+                    $key = str_replace('?', '', $item);
+                    $item = $urlParamsMap->get($this->treatParamKeyName($key));
                     return [
-                        'key' => $item,
-                        'value' => $urlParamsMap->get($this->treatParamKeyName($item)),
+                        'key' => $key,
+                        'value' => $item['value'],
+                        'description' => $item['description'] ?? ''
                     ];
                 })->keyBy(function ($item) {
                     return $item['key'];

@@ -111,73 +111,274 @@ return [
          * Url parameters which should be using a specific value.
          */
         'urlParamsMap' => [
-            'token' => '{{USER_TOKEN}}',
-            'username' => '{{USERNAME}}',
-            'userId' => '{{LARAVEL_USER_ID}}',
-            'articleId' => '{{PARAM_ARTICLE_ID}}',
-            'clientId' => '{{PARAM_CLIENT_ID}}',
-            'email' => '{{PARAM_EMAIL}}',
-            'platform' => '{{PARAM_PLATFORM}}',
-            'profileId' => '{{PARAM_PROFILE_ID}}',
-            'profile' => '{{PARAM_PROFILE_ID}}',
-            'hash' => '{{PARAM_HASH}}',
-            'id' => '{{PARAM_ID}}',
-            'transactionId' => '{{PARAM_TRANSACTION_ID}}',
-            'subscriptionId' => '{{PARAM_SUBSCRIPTION_ID}}',
-            'streamerId' => '{{PARAM_STREAMER_ID}}',
-            'itemId' => '{{PARAM_ITEM_ID}}',
-            'channelId' => '{{PARAM_CHANNEL_ID}}',
-            'type' => '{{PARAM_TYPE}}',
-            'template' => '{{PARAM_TEMPLATE}}',
-            'uuid' => '{{PARAM_UUID}}',
-            'path' => '{{PARAM_PATH}}',
-            'search' => '{{PARAM_SEARCH}}',
-            'giveawayId' => '{{PARAM_GIVE_AWAY_ID}}',
-            'viewerId' => '{{PARAM_VIEWER_ID}}',
-            'configurationKey' => '{{PARAM_CONFIGURATION_KEY}}',
-            'referrer' => '{{PARAM_REFERRER}}',
-            'a' => '{{PARAM_A}}',
-            'featureFlag' => '{{PARAM_FEATURE_FLAG}}',
-            'twitchId' => '{{TWITCH_ID}}',
-            'countType' => '{{PARAM_COUNT_TYPE}}',
-            'period' => '{{PARAM_PERIOD}}',
-            'module_slug' => '{{PARAM_MODULE_SLUG}}',
-            'boardId' => '{{PARAM_BOARD_ID}}',
-            'x' => '{{PARAM_X}}',
-            'y' => '{{PARAM_Y}}',
-            'disputeId' => '{{PARAM_DISPUTE_ID}}',
-            'orderId' => '{{PARAM_ORDER_ID}}',
-            'broadcastId' => '{{PERISCOPE_BROADCAST_ID}}',
-            'chatToken' => '{{PERISCOPE_CHAT_TOKEN}}',
-            'idx' => '{{PARAM_IDX}}',
-            'promoType' => '{{PARAM_PROMOTYPE}}',
-            'redeemCode' => '{{PARAM_REDEEM_CODE}}',
-            'sku' => '{{PARAM_SKU}}',
-            'game' => '{{PARAM_GAME}}',
-            'month' => '{{PARAM_MONTH}}',
-            'route' => '{{PARAM_ROUTE}}',
-            'dealId' => '{{PARAM_DEAL_ID}}',
-            'broadcaster' => '{{PARAM_BROADCASTER}}',
-            'attachmentId' => '{{PARAM_ATTACHMENT_ID}}',
-            'name' => '{{PARAM_NAME}}',
-            'tab' => '{{PARAM_USER_TAB}}',
-            'secret' => '{{PARAM_SECRET}}',
-            'charity_name' => '{{PARAM_CHARITY_NAME}}',
-            'slug' => '{{PARAM_CHARITY_SLUG}}',
-            'campaign_id' => '{{PARAM_CHARITY_CAMPAIGN_ID}}',
-            'charity_id' => '{{PARAM_CHARITY_ID}}',
-            'streamer_campaign_id' => '{{PARAM_CHARITY_STREAMER_CAMPAIGN_ID}}',
-            'team_slug' => '{{PARAM_CHARITY_TEAM_SLUG}}',
-            'team_id' => '{{PARAM_CHARITY_TEAM_ID}}',
-            'member_id' => '{{PARAM_CHARITY_MEMBER_ID}}',
-            'importStreamElements' => '{{PARAM_IMPORT_STREAM_ELEMENTS}}',
-            'orderCode' => '{{PARAM_MERCH_ORDER_CODE}}',
-            'droopshipId' => '{{PARAM_MERCH_DROOPSHIP_ID}}',
-            'productId' => '{{PARAM_MERCH_PRODUCT_ID}}',
-            'mappingId' => '{{PARAM_MERCH_MAPPING_ID}}',
-            'dropshipId' => '{{PARAM_MERCH_DROPSHIP_ID}}',
-            'taskKey' => '{{PARAM_MERCH_TASK_KEY}}',
-            'giftId' => '{{PARAM_GIFT_ID}}',
+            'token' => [
+                'value' => '{{USER_TOKEN}}',
+                'description' => 'Streamlabs user token'
+            ],
+            'username' => [
+                'value' => '{{USERNAME}}',
+                'description' => 'Username (used for User, Profile and Facemasks)'
+            ],
+            'userId' => [
+                'value' => '{{LARAVEL_USER_ID}}',
+                'description' => 'Laravel User ID of Streamlabs Dashboard'
+            ],
+            'articleId' => [
+                'value' => '{{PARAM_BLOG_ARTICLE_ID}}',
+                'description' => 'Admin Blog article ID'
+            ],
+            'clientId' => [
+                'value' => '{{PARAM_CLIENT_ID}}',
+                'description' => 'Dashboard API Settings client_id'
+            ],
+            'email' => [
+                'value' => '{{PARAM_ADMIN_PANEL_EMAIL}}',
+                'description' => 'Streamlabs user email (used on Dashboard Admin Panel)'
+            ],
+            'handle' => [
+                'value' => '{{PARAM_ADMIN_PANEL_HANDLE}}',
+                'description' => 'Dashboard username/email or something else (used on Dashboard Admin Panel search)'
+            ],
+            'platform' => [
+                'value' => '{{PARAM_PLATFORM}}',
+                'description' => 'Platform type, like twitch, mixer, facebook, etc (used on Dashboard Admin Panel, ChatBotApi, Giveaway, Integrations, Leaderboard, Test alerts, Accounts, Streamlabels API)'
+            ],
+            'profileId' => [
+                'value' => '{{PARAM_PROFILE_ID}}',
+                'description' => 'Used for Widget Profiles'
+            ],
+            'profile' => [
+                'value' => '{{PARAM_PROFILE_ID}}',
+                'description' => 'Used for Widget Profiles'
+            ],
+            'hash' => [
+                'value' => '{{PARAM_HASH}}',
+                'description' => 'Hash code for Widget Profiles'
+            ],
+            'id' => [
+                'value' => '{{PARAM_ID}}',
+                'description' => 'General ID number, you might like to use a specific value here. (used in multiple places in this collection, like: AlertProfile, Changelog, Giveaway, Media, Poll, Restream, StreamerLoyalty, StreamerLoyaltyAdmin, UserManagement, Gfycat, Merchandise)'
+            ],
+            'transactionId' => [
+                'value' => '{{PARAM_TRANSACTION_ID}}',
+                'description' => 'Used for Admin Billing and BrainTree refunds.'
+            ],
+            'subscriptionId' => [
+                'value' => '{{PARAM_SUBSCRIPTION_ID}}',
+                'description' => 'Used on Admin Billing, Braintree and Prime subsriptions'
+            ],
+            'streamerId' => [
+                'value' => '{{TWITCH_ID}}',
+                'description' => 'The platform id of a streamer on Twitch.'
+            ],
+            'itemId' => [
+                'value' => '{{PARAM_COLLECTIBLE_ITEM_ID}}',
+                'description' => 'Collectible item id'
+            ],
+            'channelId' => [
+                'value' => '{{TWITCH_ID}}',
+                'description' => 'The platform id of a streamer on Twitch.'
+            ],
+            'type' => [ // RETURN HERE
+                'value' => '{{PARAM_TYPE}}',
+                'description' => ''
+            ],
+            'template' => [
+                'value' => '{{PARAM_TEMPLATE}}',
+                'description' => 'Email or Twig Donation template.'
+            ],
+            'uuid' => [
+                'value' => '{{PARAM_UUID}}',
+                'description' => 'UUID value (used for Facemasks)'
+            ],
+            'path' => [
+                'value' => '{{PARAM_PATH}}',
+                'description' => 'Storage path (used on FileUpload and Cloudbot)'
+            ],
+            'search' => [
+                'value' => '{{PARAM_GFYCAT_SEARCH}}',
+                'description' => 'Gfycat search string.'
+            ],
+            'giveawayId' => [
+                'value' => '{{PARAM_GIVEAWAY_ID}}',
+                'description' => 'GiveAway ID'
+            ],
+            'viewerId' => [
+                'value' => '{{PARAM_GIVEAWAY_VIEWER_ID}}',
+                'description' => 'GiveAway Viewer ID'
+            ],
+            'configurationKey' => [
+                'value' => '{{PARAM_CONFIGURATION_KEY}}',
+                'description' => 'Configuration Key for Global or Mobile configurations.'
+            ],
+            'referrer' => [
+                'value' => '{{PARAM_REFERRER}}',
+                'description' => 'Home Referrer.'
+            ],
+            'a' => [
+                'value' => '{{PARAM_A}}',
+                'description' => 'Home slobs or Slobs Download "a" param.'
+            ],
+            'featureFlag' => [
+                'value' => '{{PARAM_FEATURE_FLAG}}',
+                'description' => 'Incremental Rollout feature flag'
+            ],
+            'twitchId' => [
+                'value' => '{{TWITCH_ID}}',
+                'description' => 'The platform id of a streamer on Twitch.'
+            ],
+            'countType' => [
+                'value' => '{{LEADERBOARD_COUNT_TYPE}}',
+                'description' => 'Leaderboard count type.'
+            ],
+            'period' => [
+                'value' => '{{LEADERBOARD_PERIOD}}',
+                'description' => 'Leaderboard period of date.'
+            ],
+            'module_slug' => [
+                'value' => '{{LOYALTY_MODULE_SLUG}}',
+                'description' => 'Loyalty Module Slug'
+            ],
+            'boardId' => [
+                'value' => '{{PAINT_BOARD_ID}}',
+                'description' => 'Paint Board ID'
+            ],
+            'x' => [
+                'value' => '{{PAINT_X}}',
+                'description' => 'Paint X Param'
+            ],
+            'y' => [
+                'value' => '{{PAINT_Y}}',
+                'description' => 'Paint Y Param'
+            ],
+            'disputeId' => [
+                'value' => '{{PAYPAL_DISPUTE_ID}}',
+                'description' => 'PayPal dispute ID'
+            ],
+            'orderId' => [
+                'value' => '{{PAYPAL_ORDER_ID}}',
+                'description' => 'PayPal order ID'
+            ],
+            'broadcastId' => [
+                'value' => '{{PERISCOPE_BROADCAST_ID}}',
+                'description' => 'Periscope broadcast ID'
+            ],
+            'chatToken' => [
+                'value' => '{{PERISCOPE_CHAT_TOKEN}}',
+                'description' => 'Periscope Chat Token'
+            ],
+            'idx' => [
+                'value' => '{{PARAM_POLL_IDX}}',
+                'description' => 'Poll ID'
+            ],
+            'promoType' => [
+                'value' => '{{PARAM_PRIME_PROMOTYPE}}',
+                'description' => 'Prime Promotion type'
+            ],
+            'redeemCode' => [
+                'value' => '{{PARAM_REDEMPTION_REDEEM_CODE}}',
+                'description' => 'Redemption Redeem code'
+            ],
+            'sku' => [
+                'value' => '{{PARAM_SLOBS_INTELCONFIG_SKU}}',
+                'description' => 'Slobs Intelconfig SKU'
+            ],
+            'game' => [
+                'value' => '{{PARAM_SLOBS_GAME}}',
+                'description' => 'Slobs game preset'
+            ],
+            'month' => [
+                'value' => '{{PARAM_SLOBS_MONTH}}',
+                'description' => 'Slobs affiliate month for monthly stats.'
+            ],
+            'route' => [
+                'value' => '{{PARAM_STATS_ROUTE}}',
+                'description' => 'Stats Router route'
+            ],
+            'dealId' => [
+                'value' => '{{LOYALTY_DEAL_ID}}',
+                'description' => 'Streamer Loyalty Deal ID'
+            ],
+            'broadcaster' => [
+                'value' => '{{PARAM_TIP_BROADCASTER}}',
+                'description' => 'Tip Broadcaster'
+            ],
+            'attachmentId' => [
+                'value' => '{{PARAM_TIP_ATTACHMENT_ID}}',
+                'description' => 'Tip Attachment ID'
+            ],
+            'name' => [
+                'value' => '{{USERNAME}}',
+                'description' => 'Username (used for User, Profile and Facemasks)'
+            ],
+            'secret' => [ // RETURN HERE
+                'value' => '{{PARAM_INVITE_SECRET}}',
+                'description' => 'User Management or Charity invite secret.'
+            ],
+            'charity_name' => [
+                'value' => '{{CHARITY_NAME}}',
+                'description' => 'Charity Name'
+            ],
+            'slug' => [
+                'value' => '{{CHARITY_SLUG}}',
+                'description' => 'Charity Slug'
+            ],
+            'campaign_id' => [
+                'value' => '{{CHARITY_CAMPAIGN_ID}}',
+                'description' => 'Charity campaign ID'
+            ],
+            'charity_id' => [
+                'value' => '{{CHARITY_CAMPAIGN_ID}}',
+                'description' => 'Charity campaign ID'
+            ],
+            'streamer_campaign_id' => [
+                'value' => '{{CHARITY_STREAMER_CAMPAIGN_ID}}',
+                'description' => 'Charity streamer campaign ID (should be different of CHARITY_CAMPAIGN_ID variable value)'
+            ],
+            'team_slug' => [
+                'value' => '{{CHARITY_TEAM_SLUG}}',
+                'description' => 'Charity Team slug name'
+            ],
+            'team_id' => [
+                'value' => '{{CHARITY_TEAM_ID}}',
+                'description' => 'Charity Team ID'
+            ],
+            'member_id' => [
+                'value' => '{{CHARITY_MEMBER_ID}}',
+                'description' => 'Charity Member ID'
+            ],
+            'importStreamElements' => [
+                'value' => '{{STREAM_ELEMENTS_JWT}}',
+                'description' => 'JWT for StreamElements import'
+            ],
+            'orderCode' => [
+                'value' => '{{MERCH_ORDER_CODE}}',
+                'description' => 'Merch order code.'
+            ],
+            'droopshipId' => [
+                'value' => '{{MERCH_DROOPSHIP_ID}}',
+                'description' => 'Merch Droopship ID'
+            ],
+            'productId' => [
+                'value' => '{{MERCH_PRODUCT_ID}}',
+                'description' => 'Merch Product ID'
+            ],
+            'mappingId' => [
+                'value' => '{{MERCH_MAPPING_ID}}',
+                'description' => 'Merch Mapping ID'
+            ],
+            'dropshipId' => [
+                'value' => '{{MERCH_DROPSHIP_ID}}',
+                'description' => 'Merch Dropship ID'
+            ],
+            'taskKey' => [
+                'value' => '{{MERCH_TASK_KEY}}',
+                'description' => 'Merch Task Key'
+            ],
+            'giftId' => [
+                'value' => '{{PARAM_PRIME_GIFT_ID}}',
+                'description' => 'Prime Gift ID for cancellation.'
+            ],
         ],
     ],
 
