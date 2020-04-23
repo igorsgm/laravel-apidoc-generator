@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
      * The type of documentation output to generate.
      * - "static" will generate a static HTMl page in the /public/docs folder,
@@ -98,8 +99,85 @@ return [
                 'XDEBUG_SESSION_START' => [
                     'value' => '{{XDEBUG_SESSION_START}}',
                     'disabled' => true,
-                ]
+                ],
+                'token' => [
+                    'value' => '{{USER_TOKEN}}',
+                    'disabled' => true,
+                ],
             ],
+        ],
+
+        /*
+         * Url parameters which should be using a specific value.
+         */
+        'urlParamsMap' => [
+            'token' => '{{USER_TOKEN}}',
+            'username' => '{{USERNAME}}',
+            'userId' => '{{LARAVEL_USER_ID}}',
+            'articleId' => '{{PARAM_ARTICLE_ID}}',
+            'clientId' => '{{PARAM_CLIENT_ID}}',
+            'email' => '{{PARAM_EMAIL}}',
+            'platform' => '{{PARAM_PLATFORM}}',
+            'profileId' => '{{PARAM_PROFILE_ID}}',
+            'profile' => '{{PARAM_PROFILE_ID}}',
+            'hash' => '{{PARAM_HASH}}',
+            'id' => '{{PARAM_ID}}',
+            'transactionId' => '{{PARAM_TRANSACTION_ID}}',
+            'subscriptionId' => '{{PARAM_SUBSCRIPTION_ID}}',
+            'streamerId' => '{{PARAM_STREAMER_ID}}',
+            'itemId' => '{{PARAM_ITEM_ID}}',
+            'channelId' => '{{PARAM_CHANNEL_ID}}',
+            'type' => '{{PARAM_TYPE}}',
+            'template' => '{{PARAM_TEMPLATE}}',
+            'uuid' => '{{PARAM_UUID}}',
+            'path' => '{{PARAM_PATH}}',
+            'search' => '{{PARAM_SEARCH}}',
+            'giveawayId' => '{{PARAM_GIVE_AWAY_ID}}',
+            'viewerId' => '{{PARAM_VIEWER_ID}}',
+            'configurationKey' => '{{PARAM_CONFIGURATION_KEY}}',
+            'referrer' => '{{PARAM_REFERRER}}',
+            'a' => '{{PARAM_A}}',
+            'featureFlag' => '{{PARAM_FEATURE_FLAG}}',
+            'twitchId' => '{{TWITCH_ID}}',
+            'countType' => '{{PARAM_COUNT_TYPE}}',
+            'period' => '{{PARAM_PERIOD}}',
+            'module_slug' => '{{PARAM_MODULE_SLUG}}',
+            'boardId' => '{{PARAM_BOARD_ID}}',
+            'x' => '{{PARAM_X}}',
+            'y' => '{{PARAM_Y}}',
+            'disputeId' => '{{PARAM_DISPUTE_ID}}',
+            'orderId' => '{{PARAM_ORDER_ID}}',
+            'broadcastId' => '{{PERISCOPE_BROADCAST_ID}}',
+            'chatToken' => '{{PERISCOPE_CHAT_TOKEN}}',
+            'idx' => '{{PARAM_IDX}}',
+            'promoType' => '{{PARAM_PROMOTYPE}}',
+            'redeemCode' => '{{PARAM_REDEEM_CODE}}',
+            'sku' => '{{PARAM_SKU}}',
+            'game' => '{{PARAM_GAME}}',
+            'month' => '{{PARAM_MONTH}}',
+            'route' => '{{PARAM_ROUTE}}',
+            'dealId' => '{{PARAM_DEAL_ID}}',
+            'broadcaster' => '{{PARAM_BROADCASTER}}',
+            'attachmentId' => '{{PARAM_ATTACHMENT_ID}}',
+            'name' => '{{PARAM_NAME}}',
+            'tab' => '{{PARAM_USER_TAB}}',
+            'secret' => '{{PARAM_SECRET}}',
+            'charity_name' => '{{PARAM_CHARITY_NAME}}',
+            'slug' => '{{PARAM_CHARITY_SLUG}}',
+            'campaign_id' => '{{PARAM_CHARITY_CAMPAIGN_ID}}',
+            'charity_id' => '{{PARAM_CHARITY_ID}}',
+            'streamer_campaign_id' => '{{PARAM_CHARITY_STREAMER_CAMPAIGN_ID}}',
+            'team_slug' => '{{PARAM_CHARITY_TEAM_SLUG}}',
+            'team_id' => '{{PARAM_CHARITY_TEAM_ID}}',
+            'member_id' => '{{PARAM_CHARITY_MEMBER_ID}}',
+            'importStreamElements' => '{{PARAM_IMPORT_STREAM_ELEMENTS}}',
+            'orderCode' => '{{PARAM_MERCH_ORDER_CODE}}',
+            'droopshipId' => '{{PARAM_MERCH_DROOPSHIP_ID}}',
+            'productId' => '{{PARAM_MERCH_PRODUCT_ID}}',
+            'mappingId' => '{{PARAM_MERCH_MAPPING_ID}}',
+            'dropshipId' => '{{PARAM_MERCH_DROPSHIP_ID}}',
+            'taskKey' => '{{PARAM_MERCH_TASK_KEY}}',
+            'giftId' => '{{PARAM_GIFT_ID}}',
         ],
     ],
 
@@ -263,6 +341,7 @@ return [
         ],
         'urlParameters' => [
             \Mpociot\ApiDoc\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
+            \Mpociot\ApiDoc\Extracting\Strategies\UrlParameters\GetFromUrlString::class,
         ],
         'queryParameters' => [
             \Mpociot\ApiDoc\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,

@@ -162,7 +162,8 @@ class PostmanCollectionWriter
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
         $urlParams = collect($route['urlParameters'])->filter(function ($_, $key) use ($route) {
-            return Str::contains($route['uri'], '{' . $key . '}');
+            // return Str::contains($route['uri'], '{' . $key . '}');
+            return preg_match('/\{\??' . $key . '\??\}/', $route['uri']);
         });
 
         $route['queryParameters'] = collect($route['queryParameters']);
@@ -182,7 +183,7 @@ class PostmanCollectionWriter
             'query' => $route['queryParameters']->map(function ($parameter, $key) {
                 $param = [
                     'key' => $key,
-                    'value' => Str::startsWith($parameter['value'], '{{') ? $parameter['value'] : urlencode($parameter['value']),
+                    'value' => $this->treatParamValueName($parameter['value']),
                     // Default query params to disabled if they aren't required and have empty values
                     'disabled' => $parameter['disabled'] || (!$parameter['required'] && empty($parameter['value'])),
                 ];
@@ -202,15 +203,30 @@ class PostmanCollectionWriter
         }
 
         $base['variable'] = $urlParams->map(function ($parameter, $key) {
-            return [
-                'id' => $key,
+            $variable = [
                 'key' => $key,
-                'value' => urlencode($parameter['value']),
-                'description' => $parameter['description'],
+                'value' => $this->treatParamValueName($parameter['value']),
             ];
+
+            if (!empty($parameter['description'])) {
+                $variable['description'] = $parameter['description'];
+            }
+
+            return $variable;
         })->values()->toArray();
 
         return $base;
+    }
+
+    /**
+     * Treats the parameter name considering Postman variables (that starts with "{{")
+     *
+     * @param string $parameterName
+     * @return string
+     */
+    protected function treatParamValueName($parameterName)
+    {
+        return Str::startsWith($parameterName, '{{') ? $parameterName : urlencode($parameterName);
     }
 
     protected function getAuthHeader()
