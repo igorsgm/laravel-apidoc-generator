@@ -543,6 +543,7 @@ return [
     'strategies' => [
         'metadata' => [
             \Mpociot\ApiDoc\Extracting\Strategies\Metadata\GetFromDocBlocks::class,
+            \Mpociot\ApiDoc\Extracting\Strategies\Metadata\CustomMetadata::class,
         ],
         'urlParameters' => [
             \Mpociot\ApiDoc\Extracting\Strategies\UrlParameters\GetFromUrlParamTag::class,
@@ -550,6 +551,7 @@ return [
         ],
         'queryParameters' => [
             \Mpociot\ApiDoc\Extracting\Strategies\QueryParameters\GetFromQueryParamTag::class,
+            \Mpociot\ApiDoc\Extracting\Strategies\QueryParameters\CustomGetFromConfig::class,
         ],
         'headers' => [
             \Mpociot\ApiDoc\Extracting\Strategies\RequestHeaders\GetFromRouteRules::class,

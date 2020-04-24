@@ -166,12 +166,6 @@ class PostmanCollectionWriter
             return preg_match('/\{\??' . $key . '\??\}/', $route['uri']);
         });
 
-        $route['queryParameters'] = collect($route['queryParameters']);
-
-        if (!empty($this->apply['queryParams'])) {
-            $route['queryParameters'] = $route['queryParameters']->union($this->apply['queryParams']);
-        }
-
         /** @var Collection $queryParams */
         $base = [
             'protocol' => $this->protocol,
@@ -180,7 +174,7 @@ class PostmanCollectionWriter
             'path' => preg_replace_callback('/\/{(\w+)\??}(?=\/|$)/', function ($matches) {
                 return '/:' . $matches[1];
             }, $route['uri']),
-            'query' => $route['queryParameters']->map(function ($parameter, $key) {
+            'query' => collect($route['queryParameters'])->map(function ($parameter, $key) {
                 $param = [
                     'key' => $key,
                     'value' => $this->treatParamValueName($parameter['value']),
