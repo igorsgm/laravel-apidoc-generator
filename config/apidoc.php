@@ -193,7 +193,7 @@ return [
             ],
             'path' => [
                 'value' => '{{PARAM_PATH}}',
-                'description' => 'Storage path (used on FileUpload and Cloudbot)'
+                'description' => 'Storage path (used on Dashboard Closure, FileUpload and Cloudbot)'
             ],
             'search' => [
                 'value' => '{{PARAM_GFYCAT_SEARCH}}',
@@ -292,8 +292,8 @@ return [
                 'description' => 'Slobs affiliate month for monthly stats.'
             ],
             'route' => [
-                'value' => '{{PARAM_STATS_ROUTE}}',
-                'description' => 'Stats Router route'
+                'value' => '{{PARAM_STATS_OR_UPLOAD_ROUTE}}',
+                'description' => 'Stats or Upload Router route'
             ],
             'dealId' => [
                 'value' => '{{LOYALTY_DEAL_ID}}',
@@ -382,7 +382,25 @@ return [
             'widgetType' => [
                 'value' => '{{PARAM_LOGS_WIDGET_TYPE}}',
                 'description' => 'Widget type for widget logs'
+            ],
+            // Closure Params
+            'all' => [
+                'value' => '{{PARAM_ALL}}',
+                'description' => 'Anything'
+            ],
+            'widget' => [
+                'value' => '{{PARAM_LOGS_WIDGET_TYPE}}',
+                'description' => 'A widget name'
+            ],
+            'twitchUsername' => [
+                'value' => '{{TWITCH_USERNAME}}',
+                'description' => 'Twitch username'
+            ],
+            'url' => [
+                'value' => '{{PARAM_PROXY_URL}}',
+                'description' => 'Twitch Proxy URL, usually: "https://static-cdn.jtvnw.net"'
             ]
+
         ],
     ],
 

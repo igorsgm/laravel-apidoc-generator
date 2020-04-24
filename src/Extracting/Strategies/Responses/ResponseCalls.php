@@ -30,6 +30,10 @@ class ResponseCalls extends Strategy
      */
     public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionMethod $method, array $routeRules, array $context = [])
     {
+        if ($route->isClosure) {
+            return [];
+        }
+
         $rulesToApply = $routeRules['response_calls'] ?? [];
         if (! $this->shouldMakeApiCall($route, $rulesToApply, $context)) {
             return null;

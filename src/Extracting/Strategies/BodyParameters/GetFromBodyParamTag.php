@@ -19,6 +19,10 @@ class GetFromBodyParamTag extends Strategy
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
     {
+        if ($route->isClosure) {
+            return [];
+        }
+
         foreach ($method->getParameters() as $param) {
             $paramType = $param->getType();
             if ($paramType === null) {

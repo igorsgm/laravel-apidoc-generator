@@ -26,6 +26,10 @@ class RouteDocBlocker
      */
     public static function getDocBlocksFromRoute(Route $route): array
     {
+        if ($route->isClosure) {
+            return [];
+        }
+
         list($className, $methodName) = Utils::getRouteClassAndMethodNames($route);
         $docBlocks = self::getCachedDocBlock($route, $className, $methodName);
         if ($docBlocks) {

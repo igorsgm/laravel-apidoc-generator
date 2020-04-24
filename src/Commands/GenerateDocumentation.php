@@ -123,6 +123,10 @@ class GenerateDocumentation extends Command
      */
     private function getRoutesControllerGroupName(Route $route)
     {
+        if ($route->isClosure) {
+            return 'Closures';
+        }
+
         $controllerName = Str::parseCallback($route->getAction()['uses'], null)[0];
         $controllerName = class_basename($controllerName);
         return str_replace('Controller', '', $controllerName);
@@ -190,10 +194,17 @@ class GenerateDocumentation extends Command
         foreach ($routes as $routeItem) {
             /** @var Route $route */
             $route = $routeItem->getRoute();
+            $route->isClosure = $this->isClosureRoute($route->getAction());
             $routeControllerAndMethod = Utils::getRouteClassAndMethodNames($route->getAction());
 
+            if ($route->isClosure) {
+                $a = 1;
+            }
+
             try {
-                if ($this->isValidRoute($route, $routeControllerAndMethod) && $this->isRouteVisibleForDocumentation($routeControllerAndMethod)) {
+                if ($this->isValidRoute($route, $routeControllerAndMethod) &&
+                    ($route->isClosure || $this->isRouteVisibleForDocumentation($routeControllerAndMethod))
+                ) {
                     $parsedRoute = $generator->processRoute($route, $routeItem['apply'] ?? []);
                     $parsedRoute['metadata']['groupName'] = $this->getRoutesControllerGroupName($route);
                     $parsedRoute['metadata']['permissionGroupName'] = $this->getRoutesPermissionGroupNames($route);

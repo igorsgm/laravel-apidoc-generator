@@ -38,6 +38,10 @@ class UseApiResourceTags extends Strategy
      */
     public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionMethod $method, array $rulesToApply, array $context = [])
     {
+        if ($route->isClosure) {
+            return [];
+        }
+        
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = $docBlocks['method'];

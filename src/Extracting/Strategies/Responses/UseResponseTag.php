@@ -26,6 +26,10 @@ class UseResponseTag extends Strategy
      */
     public function __invoke(Route $route, \ReflectionClass $controller, \ReflectionMethod $method, array $routeRules, array $context = [])
     {
+        if ($route->isClosure) {
+            return [];
+        }
+        
         $docBlocks = RouteDocBlocker::getDocBlocksFromRoute($route);
         /** @var DocBlock $methodDocBlock */
         $methodDocBlock = $docBlocks['method'];

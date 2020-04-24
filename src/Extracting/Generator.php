@@ -54,8 +54,14 @@ class Generator
     public function processRoute(Route $route, array $routeRules = [])
     {
         [$controllerName, $methodName] = Utils::getRouteClassAndMethodNames($route->getAction());
-        $controller = new ReflectionClass($controllerName);
-        $method = $controller->getMethod($methodName);
+
+        if ($route->isClosure) {
+            $controller = new ReflectionClass('Mpociot\ApiDoc\Extracting\ClosureSample');
+            $method = $controller->getMethod('sampleMethod');
+        } else {
+            $controller = new ReflectionClass($controllerName);
+            $method = $controller->getMethod($methodName);
+        }
 
         $parsedRoute = [
             'id' => md5($this->getUri($route) . ':' . implode($this->getMethods($route))),
