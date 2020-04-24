@@ -98,9 +98,9 @@ class PostmanCollectionWriter
         return [
             'name' => $this->getRequestName($route),
             'request' => [
-                'url' => $this->makeUrlData($route),
                 'method' => $method,
                 'header' => $this->resolveHeadersForRoute($route),
+                'url' => $this->makeUrlData($route),
                 'body' => [
                     'mode' => $mode,
                     $mode => json_encode($route['cleanBodyParameters'], JSON_PRETTY_PRINT),

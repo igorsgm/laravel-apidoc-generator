@@ -379,6 +379,10 @@ return [
                 'value' => '{{PARAM_PRIME_GIFT_ID}}',
                 'description' => 'Prime Gift ID for cancellation.'
             ],
+            'widgetType' => [
+                'value' => '{{PARAM_LOGS_WIDGET_TYPE}}',
+                'description' => 'Widget type for widget logs'
+            ]
         ],
     ],
 
