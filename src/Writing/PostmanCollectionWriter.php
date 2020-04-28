@@ -41,7 +41,9 @@ class PostmanCollectionWriter
         $this->protocol = $this->getProtocol($baseUrl);
         $this->baseUrl = $this->getBaseUrl($baseUrl);
         $this->auth = config('apidoc.postman.auth');
+        $this->event = config('apidoc.postman.event');
         $this->apply = config('apidoc.postman.apply');
+        $this->routeGroupSettings = config('apidoc.routes.0.group');
     }
 
     public function getCollection()
@@ -63,6 +65,10 @@ class PostmanCollectionWriter
             $collection['auth'] = $this->auth;
         }
 
+        if (!empty($this->event)) {
+            $collection['event'] = $this->event;
+        }
+
         return json_encode($collection, JSON_PRETTY_PRINT);
     }
 
@@ -74,7 +80,7 @@ class PostmanCollectionWriter
     public function makeRouteGroup(Collection $routes, $groupName)
     {
         $firstRoute = $routes->first();
-        return [
+        $group = [
             'name' => $groupName,
             'description' => is_array($firstRoute) ? $firstRoute['metadata']['groupDescription'] : $routes->keys()->first(),
             'item' => $routes->map(function ($route) use ($groupName) {
@@ -82,6 +88,12 @@ class PostmanCollectionWriter
                 return $this->generateEndpointItem($route, $groupName);
             })->values()->toArray(),
         ];
+
+        if (!empty($this->routeGroupSettings['events_group_map'][$groupName])) {
+            $group['event'] = $this->routeGroupSettings['events_group_map'][$groupName];
+        }
+
+        return $group;
     }
 
     protected function generateEndpointItem($route, $groupName = null)

@@ -37,7 +37,7 @@ class CustomMetadata extends Strategy
 
         if (!empty($middlewares)) {
             $descriptionArray['middlewares'] = $middlewares;
-            $descriptionArray[$this->routesGroup['permission_middleware']] = $this->treatMiddlewares($middlewares);
+            $descriptionArray[$this->routesGroup['permission_middleware']] = $this->treatPermissionMiddlewares($middlewares);
         }
 
         return json_encode($descriptionArray, JSON_PRETTY_PRINT);

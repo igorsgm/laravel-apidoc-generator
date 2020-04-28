@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 return [
 
     /*
@@ -82,6 +84,30 @@ return [
                     "key" => "token",
                     "value" => "{{OAUTH_TOKEN}}",
                     "type" => "string"
+                ]
+            ]
+        ],
+
+        /*
+         * The "Event" section that should appear in the postman collection. See the schema docs for more information:
+         * https://schema.getpostman.com/json/collection/v2.1.0/docs/index.html
+         */
+        'event' => [
+            [
+                "listen" => "test",
+                "script" => [
+                    "id" => Str::random(16),
+                    "type" => "text/javascript",
+                    "exec" => [
+                        "let role = pm.globals.get(\"role\");",
+                        "let roleString = role != \"Everyone\" ? (\"Users with role: \" + role) : role;",
+                        "",
+                        "pm.test(\"Route can be accessed by: \" + roleString, function () {",
+                        "    pm.response.to.not.have.status(401);",
+                        "    pm.response.to.not.have.status(400);",
+                        "    pm.response.to.not.have.status(403);",
+                        "});"
+                    ]
                 ]
             ]
         ],
@@ -454,6 +480,141 @@ return [
                     "settings" => "[Role] Settings",
                     "subscriber_history" => "[Role] Subscriber History",
                     "widgets" => "[Role] Widgets",
+                ],
+
+                'events_group_map' => [
+                    '[Role] Analytics' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Analytics\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Charity' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Charity\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Cloudbot' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Cloudbot\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Donation History' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Donation History\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Media Share' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Media Share\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Merch Store' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Merch Store\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Prime' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Prime\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Recent Events' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Recent Events\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Settings' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Settings\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Subscriber History' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Subscriber History\');'
+                                ]
+                            ]
+                        ],
+                    ],
+                    '[Role] Widgets' => [
+                        [
+                            'listen' => 'prerequest',
+                            'script' => [
+                                'id' => Str::random(25),
+                                'type' => 'text/javascript',
+                                'exec' => [
+                                    'pm.globals.set(\'role\', \'Widgets\');'
+                                ]
+                            ]
+                        ],
+                    ],
                 ]
             ],
             /*
@@ -502,7 +663,15 @@ return [
              * Note that the route must be referenced by name here (wildcards are supported).
              */
             'exclude' => [
-                // 'users.create', 'admin.*'
+                'logout',
+                'ideas/logout',
+                'insided/logout',
+                'api/v5.1/user/logout',
+                'chatbot/download',
+                'obs/download',
+                'slobs/download',
+                'slobs/slobs-download/{a}',
+                'varnish-vcl-party'
             ],
 
             /*
