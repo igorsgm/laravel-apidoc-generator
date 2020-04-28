@@ -73,9 +73,18 @@ return [
 
         /*
          * The "Auth" section that should appear in the postman collection. See the schema docs for more information:
-         * https://schema.getpostman.com/json/collection/v2.0.0/docs/index.html
+         * https://schema.getpostman.com/json/collection/v2.1.0/docs/index.html
          */
-        'auth' => null,
+        'auth' => [
+            "type" => "bearer",
+            "bearer" => [
+                [
+                    "key" => "token",
+                    "value" => "{{OAUTH_TOKEN}}",
+                    "type" => "string"
+                ]
+            ]
+        ],
 
         /*
          * Specify rules to be applied to all the postman routes in this group when generating documentation
@@ -86,8 +95,9 @@ return [
              */
             'headers' => [
                 'Accept' => 'application/json',
-                'Referer' => '{{STREAMLABS_URL}}/dashboard',
+                'Referer' => '{{STREAMLABS_URL}}dashboard',
                 'Cookie' => '{{STREAMLABS_COOKIE}}',
+                'X-CSRF-TOKEN' => '{{X-CSRF-TOKEN}}'
                 // 'Authorization' => 'Bearer {token}',
                 // 'Api-Version' => 'v2',
             ],
@@ -272,7 +282,7 @@ return [
                 'description' => 'Poll ID'
             ],
             'promoType' => [
-                'value' => '{{PARAM_PRIME_PROMOTYPE}}',
+                'value' => '{{PRIME_PROMOTYPE}}',
                 'description' => 'Prime Promotion type'
             ],
             'redeemCode' => [
@@ -376,7 +386,7 @@ return [
                 'description' => 'Merch Task Key'
             ],
             'giftId' => [
-                'value' => '{{PARAM_PRIME_GIFT_ID}}',
+                'value' => '{{PRIME_GIFT_ID}}',
                 'description' => 'Prime Gift ID for cancellation.'
             ],
             'widgetType' => [

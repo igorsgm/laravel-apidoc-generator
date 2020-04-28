@@ -148,7 +148,7 @@ class GenerateDocumentation extends Command
         $permissions = [];
 
         foreach ($middlewares as $middleware) {
-            if (str_contains($middleware, $this->routesGroup['permission_middleware'])) {
+            if (Str::contains($middleware, $this->routesGroup['permission_middleware'])) {
                 $permissions = substr($middleware, strpos($middleware, ":") + 1);
                 $permissions = explode(',', $permissions);
             }
