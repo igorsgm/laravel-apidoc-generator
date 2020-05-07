@@ -37,4 +37,36 @@ abstract class Strategy
      * @return array
      */
     abstract public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = []);
+
+    /**
+     * @param string $type
+     * @param string $value
+     * @return array
+     */
+    public function makePostmanAuthArray($type, $value)
+    {
+        return [
+            "type" => $type,
+            "bearer" => [
+                [
+                    "key" => "token",
+                    "value" => $value,
+                    "type" => "string"
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @param string|integer $value
+     * @param bool $disabled
+     * @return array
+     */
+    public function makeQueryParamArray($value, $disabled = false)
+    {
+        return [
+            'value' => $value,
+            'disabled' => $disabled
+        ];
+    }
 }

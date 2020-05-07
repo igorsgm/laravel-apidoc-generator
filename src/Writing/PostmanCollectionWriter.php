@@ -107,7 +107,7 @@ class PostmanCollectionWriter
 
         $method = $route['methods'][0];
 
-        return [
+        $item = [
             'name' => $this->getRequestName($route),
             'request' => [
                 'method' => $method,
@@ -121,6 +121,13 @@ class PostmanCollectionWriter
                 'response' => [],
             ],
         ];
+
+        // Apply custom auth comming from metadata
+        if (!empty($route['metadata']['auth'])) {
+            $item['request']['auth'] = $route['metadata']['auth'];
+        }
+
+        return $item;
     }
 
     /**
@@ -146,14 +153,10 @@ class PostmanCollectionWriter
         $headers = collect($route['headers']);
 
         // Exclude authentication headers if they're handled by Postman auth
-        $authHeader = $this->getAuthHeader();
-        if (! empty($authHeader)) {
-            $headers = $headers->except($authHeader);
-        }
-
-        if (!empty($this->apply['headers'])) {
-            $headers = $headers->union($this->apply['headers']);
-        }
+//        $authHeader = $this->getAuthHeader();
+//        if (!empty($authHeader)) {
+//            $headers = $headers->except($authHeader);
+//        }
 
         return $headers
             ->union([
@@ -191,7 +194,7 @@ class PostmanCollectionWriter
                     'key' => $key,
                     'value' => $this->treatParamValueName($parameter['value']),
                     // Default query params to disabled if they aren't required and have empty values
-                    'disabled' => $parameter['disabled'] || (!$parameter['required'] && empty($parameter['value'])),
+                    'disabled' => (isset($parameter['disabled']) && $parameter['disabled']) || (isset($parameter['required']) && !$parameter['required'] && empty($parameter['value'])),
                 ];
 
                 if (!empty($parameter['description'])) {
