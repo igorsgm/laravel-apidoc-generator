@@ -4,6 +4,7 @@ namespace Mpociot\ApiDoc\Extracting\Strategies;
 
 use Illuminate\Routing\Route;
 use Mpociot\ApiDoc\Tools\DocumentationConfig;
+use Ramsey\Uuid\Uuid;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -67,6 +68,23 @@ abstract class Strategy
         return [
             'value' => $value,
             'disabled' => $disabled
+        ];
+    }
+
+    /**
+     * @param string $listenType    'test' or 'prerequest'
+     * @param array $testsArray
+     * @return array
+     */
+    public function makeEventTestArray($listenType, $testsArray)
+    {
+        return [
+            'listen' => $listenType,
+            'script' => [
+                'id' => Uuid::uuid4()->toString(),
+                'exec' => $testsArray,
+                'type' => 'text/javascript'
+            ]
         ];
     }
 }

@@ -127,6 +127,11 @@ class PostmanCollectionWriter
             $item['request']['auth'] = $route['metadata']['auth'];
         }
 
+        // Apply custom event tests comming from metadata
+        if (!empty($route['metadata']['event'])) {
+            $item['event'] = $route['metadata']['event'];
+        }
+
         return $item;
     }
 

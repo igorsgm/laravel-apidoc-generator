@@ -24,7 +24,8 @@ class CustomMetadata extends Strategy
         $this->routeMiddlewares = $route->middleware();
         return [
             'description' => $this->getLongDescription($route),
-            'auth' => $this->getCustomAuth($route)
+            'auth' => $this->getCustomAuth($route),
+            'event' => $this->getCustomEvent($route)
         ];
     }
 
@@ -99,5 +100,35 @@ class CustomMetadata extends Strategy
         if (in_array('restream-token', $this->routeMiddlewares)) {
             return $this->makePostmanAuthArray('bearer', '{{RESTREAM_API_TOKEN}}');
         }
+    }
+
+    /**
+     * Get custom test for routes
+     * It's particularly useful to skip some postman requests while testing
+     *
+     * @param Route $route
+     * @return array
+     */
+    protected function getCustomEvent($route)
+    {
+        $nextRequest = "postman.setNextRequest('%s');";
+
+        $routesTest = [
+            'loginsuccess' => sprintf($nextRequest, 'usingtwitchalerts/log'), // To skip the two '/dashboard/act-as' routes
+            'oauth/apps/{clientId}' => sprintf($nextRequest, 'auth'), // To skip 'logout'
+            'ideas/login' => sprintf($nextRequest, 'insided (Handle insided login)'), // To skip 'ideas/logout'
+            'insided' => sprintf($nextRequest, 'api/v1.0/authorize'), // To skip 'insided/logout'
+            'api/v5/slobs/user/notification/read' => sprintf($nextRequest, 'api/v5.1/user/{name}'), // To skip 'api/v5.1/user/logout'
+            'api/v5/user/pro/subscription/cancel' => sprintf($nextRequest, '/api/v5/settings/uimode') // To skip 'api/v5/settings/revoketoken'
+        ];
+
+        $uri = $route->uri();
+        if (array_key_exists($uri, $routesTest)) {
+            return [
+                $this->makeEventTestArray('test', [$routesTest[$uri]])
+            ];
+        }
+
+        return [];
     }
 }
