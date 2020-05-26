@@ -114,12 +114,20 @@ class CustomMetadata extends Strategy
         $nextRequest = "postman.setNextRequest('%s');";
 
         $routesTest = [
-            'loginsuccess' => sprintf($nextRequest, 'usingtwitchalerts/log'), // To skip the two '/dashboard/act-as' routes
-            'oauth/apps/{clientId}' => sprintf($nextRequest, 'auth'), // To skip 'logout'
-            'ideas/login' => sprintf($nextRequest, 'insided (Handle insided login)'), // To skip 'ideas/logout'
-            'insided' => sprintf($nextRequest, 'api/v1.0/authorize'), // To skip 'insided/logout'
-            'api/v5/slobs/user/notification/read' => sprintf($nextRequest, 'api/v5.1/user/{name}'), // To skip 'api/v5.1/user/logout'
-            'api/v5/user/pro/subscription/cancel' => sprintf($nextRequest, '/api/v5/settings/uimode') // To skip 'api/v5/settings/revoketoken'
+            // To skip the two '/dashboard/act-as' routes
+            'loginsuccess' => sprintf($nextRequest, 'usingtwitchalerts/log'),
+            // To skip 'logout'
+            'oauth/apps/{clientId}' => sprintf($nextRequest, 'auth'),
+            // To skip 'ideas/logout'
+            'ideas/login' => sprintf($nextRequest, 'insided (Handle insided login)'),
+            // To skip 'insided/logout'
+            'insided' => sprintf($nextRequest, 'api/v1.0/authorize'),
+            // To skip 'api/v5.1/user/logout'
+            'api/v5/slobs/user/notification/read' => sprintf($nextRequest, 'api/v5.1/user/{name}'),
+            // To skip 'api/v5/settings/revoketoken'
+            'api/v5/user/pro/subscription/cancel' => sprintf($nextRequest, 'api/v5/settings/uimode'),
+            // To skip 'admin/user/change_url' and 'admin/user/change_affiliate_url'
+            'dashboard/admin/user/whitelistAffiliate' => sprintf($nextRequest, 'dashboard/admin/user/cancel_withdrawal'),
         ];
 
         $uri = $route->uri();
